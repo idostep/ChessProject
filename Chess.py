@@ -112,7 +112,7 @@ def drawboard():
 
 #------dessin d'une piece au coordonées x y------
 def draw_piece(piece,x,y):
-    window.blit(piece.image,x,y)
+    window.blit(piece.image,(x*100,y*100))
     
 
 #------boucle main------
@@ -129,11 +129,11 @@ def main():
 
             
             
-
+            draw_case = 0
             for i in board:
                 if i != '':
-                    pass
-                   
+                    draw_piece(i,draw_case%8,draw_case//8)
+                draw_case += 1
             #window.blit(bC.image,(0,0))
 
 
