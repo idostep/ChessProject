@@ -15,32 +15,33 @@ all_pieces_img = pygame.transform.scale(pygame.image.load("chess_pieces.png").co
 
 
 #------get sprite from sprite sheet------
-def get_image(number):
-    img = pygame.Surface((taille_case,taille_case))
+def get_image(row,collumn):
+    img = pygame.Surface((taille_case,taille_case)).convert_alpha()
+    img.fill((0,0,0,0))
+    img.blit(all_pieces_img,(0,0),(taille_case*row,taille_case*collumn,taille_case*(row+1),taille_case*(collumn+1)))
     return img
 
 #------class piece------
 class piece:
-    def __init__(self, team, icon,type,image ,killable=False):
+    def __init__(self, team, icon,image,type):
         self.team = team
         self.type = type
         self.image = image
-        self.killable = killable
         self.icon = icon
         
 #------initialisation des pieces------
-nP = piece('n','♟ ',get_image(0), 'p')
-bP = piece('b','♙ ',get_image(0), 'p')
-nT = piece('n','♜ ',get_image(0), 't')
-bT = piece('b','♖ ',get_image(0), 't')
-nC = piece('n','♞ ',get_image(0), 'c')
-bC = piece('b','♘ ',get_image(0), 'c')
-nF = piece('n','♝ ',get_image(0), 'f')
-bF = piece('b','♗ ',get_image(0), 'f')
-nD = piece('n','♛ ',get_image(0), 'd')
-bD = piece('b','♕ ',get_image(0), 'd')
-nR = piece('n','♚ ',get_image(0), 'r')
-bR = piece('b','♔ ',get_image(0), 'r')
+nP = piece('n','♟ ',get_image(5,0), 'p')
+bP = piece('b','♙ ',get_image(5,1), 'p')
+nT = piece('n','♜ ',get_image(4,0), 't')
+bT = piece('b','♖ ',get_image(4,1), 't')
+nC = piece('n','♞ ',get_image(3,0), 'c')
+bC = piece('b','♘ ',get_image(3,1), 'c')
+nF = piece('n','♝ ',get_image(2,0), 'f')
+bF = piece('b','♗ ',get_image(2,1), 'f')
+nD = piece('n','♛ ',get_image(1,0), 'd')
+bD = piece('b','♕ ',get_image(1,1), 'd')
+nR = piece('n','♚ ',get_image(0,0), 'r')
+bR = piece('b','♔ ',get_image(0,1), 'r')
 
 #------initialisation de l'ordre------
 Norder = nT,nC,nF,nD,nR,nF,nF,nC,nT
@@ -118,31 +119,39 @@ def draw_piece(piece,x,y):
 def main():
     game = True #la partie est en jeu
     turns = 0 
+
+
     while game == True:
             pygame.time.delay(10)
             drawboard()
-            window.blit(bR.image,(0,0))
 
 
 
+            
+            
 
-
-
-
-
+            for i in board:
+                if i != '':
+                    pass
+                   
+            #window.blit(bC.image,(0,0))
 
 
             for event in pygame.event.get():
+
                 if event.type == pygame.QUIT:
                     game = False
-            pygame.display.update()
+            
+            keys = pygame.key.get_pressed()
+
             
 
+            pygame.display.update()
 
 
 
-            '''
-           #window.blit(all_pieces_img,(0,0))
+
+            ''' window.blit(all_pieces_img,(0,0))
             showboard()
             played = turn(turns,True)
             while not check_move(played):
@@ -150,10 +159,6 @@ def main():
             turns += 1
             movement_coords = piece_move(played)
             board[movement_coords[1]]=board[movement_coords[0]]
-            board[movement_coords[0]]=''
-            
-
-
-            '''
+            board[movement_coords[0]]='' '''
 
 main()
