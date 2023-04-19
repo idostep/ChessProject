@@ -145,35 +145,47 @@ class Echiquier:
             case_x = values[math.ceil(pos_x/self.taille_case)]
             return case_x ,case_y
 
+#------pygame events------
+    def pygame_events(self):
+        for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.game = False
+
+
+
+                
+        self.mouse_presses = pygame.mouse.get_pressed()
+                
+
+
+        self.keys = pygame.key.get_pressed()
+        
+        
+#-----quitgame------
+    def quitgame(self):
+        if self.keys[pygame.K_LCTRL] and self.keys[pygame.K_q]:
+                self.game = False
+
 #------boucle main------
 def main():
     echiquier = Echiquier()
     echiquier.setup()
-    
+    echiquier.game = True #la partie est en jeu
 
-
-
-
-    game = True #la partie est en jeu 
-    while game == True:
+    while echiquier.game == True:
             pygame.time.delay(10)
             echiquier.drawBGboard()
             echiquier.drawPiecesPosition()
             #echiquier.draw_piece('nP',7,6)
-
-
-
-            for event in pygame.event.get():
-
-                if event.type == pygame.QUIT:
-                    game = False
+            echiquier.pygame_events()
+            echiquier.quitgame()
             
-            keys = pygame.key.get_pressed()
             
-            if keys[pygame.K_LCTRL] and keys[pygame.K_q]:
-                game = False
-            
-            print(echiquier.mouse_on_case())
+            #if echiquier.mouse_presses[0]:
+            #        print("Left Mouse key was clicked")
+
+            print(echiquier.mouse_presses)
+            #print(echiquier.mouse_on_case())
 
             pygame.display.update()
 
