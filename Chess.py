@@ -29,6 +29,8 @@ class Echiquier:
 
         self.all_pieces_img = pygame.transform.scale(pygame.image.load("chess_pieces.png").convert_alpha(),(6*self.taille_case,2*self.taille_case))
 
+        self.oldclick=False
+
     def setup(self):
         self.initPieces()
         self.setupPiecesOrder()
@@ -125,12 +127,12 @@ class Echiquier:
         self.window.blit(image,(x,y))
 
 
-    #------deplacement d'une piece sur le board------ 
-    def piece_move(self,played):
+    #------deplacement d'une piece sur le board------ input E3e4 outpout 52,36
+    def translate_move(self,played):
         values = {'a':0,'b':1,'c':2,'d':3,'e':4,'f':5,'g':6,'h':7}
         from_ = int(values[played[0].lower()])+((8-int(played[1]))*8)
         to_ = int(values[played[2].lower()])+((8-int(played[3]))*8)
-        return [from_,to_]
+        return from_, to_
     
 
 
@@ -143,50 +145,99 @@ class Echiquier:
         if pos_x > 0 and pos_y > 0 and pos_x < self.taille_case*8 and pos_y < self.taille_case*8:
             case_y = 9-math.ceil(pos_y/self.taille_case)
             case_x = values[math.ceil(pos_x/self.taille_case)]
-            return case_x ,case_y
+            return case_x + str(case_y)
 
 #------pygame events------
     def pygame_events(self):
         for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.game = False
-
-
-
-                
+                if event.type == pygame.MOUSEBUTTONUP:
+                    self.click=True
+                else:
+                    self.click=False
         self.mouse_presses = pygame.mouse.get_pressed()
-                
-
-
         self.keys = pygame.key.get_pressed()
+
+
+#---------click test------
+    def clicktest(self):
         
         
+        if self.click == False and self.oldclick == True:
+             self.oldclick = self.click
+             return True
+        else:
+            self.oldclick = self.click
+            return False
+        
+
+
+
 #-----quitgame------
     def quitgame(self):
         if self.keys[pygame.K_LCTRL] and self.keys[pygame.K_q]:
                 self.game = False
+
+
+#------piecemove------
+    def move_piece(self,from_to):
+        from_ = from_to[0]
+        to_ = from_to[1]
+        self.board[to_] = self.board[from_]
+        self.board[from_] = ''
+
+#----sousligne la case selectionée----
+    def draw_hilight(self,postition):
+        values = {'a':1,'b':2,'c':3,'d':4,'e':5,'f':6,'g':7,'h':8}
+        y = int(postition[1])
+        x = int(values[postition[0].lower()])
+        pygame.draw.rect(self.window,(255,30,120), (self.taille_case*(x-1), self.taille_case*(8-y) , self.taille_case, self.taille_case))
+
 
 #------boucle main------
 def main():
     echiquier = Echiquier()
     echiquier.setup()
     echiquier.game = True #la partie est en jeu
-
-    while echiquier.game == True:
-            pygame.time.delay(10)
+    memorymove = None
+    while echiquier.game == True:            
             echiquier.drawBGboard()
+            if memorymove != None:
+                echiquier.draw_hilight(memorymove)
             echiquier.drawPiecesPosition()
             #echiquier.draw_piece('nP',7,6)
             echiquier.pygame_events()
             echiquier.quitgame()
+
+            if echiquier.clicktest():
+                if memorymove==None:
+                    memorymove = echiquier.mouse_on_case()
+                
+                elif  memorymove == echiquier.mouse_on_case():
+                    memorymove = None
+
+                else:
+                    echiquier.move_piece(echiquier.translate_move(memorymove + echiquier.mouse_on_case()))
+                    memorymove = None
+                    
+                print("bip")
+
             
+
+            
+            
+            
+            
+        
+
             
             #if echiquier.mouse_presses[0]:
             #        print("Left Mouse key was clicked")
 
-            print(echiquier.mouse_presses)
+            #print(echiquier.mouse_presses)
             #print(echiquier.mouse_on_case())
-
+            pygame.time.delay(10)
             pygame.display.update()
 
 

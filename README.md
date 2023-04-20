@@ -1,3 +1,4 @@
 # ChessProject
 movepiece
-version 3.2.2 quitgame + works lol
+version 3.3.1
+omg move piece
