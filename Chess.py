@@ -128,11 +128,15 @@ class Echiquier:
 
 
     #------deplacement d'une piece sur le board------ input E3e4 outpout 52,36
-    def translate_move(self,played):
+    def translate_moves(self,played):
         values = {'a':0,'b':1,'c':2,'d':3,'e':4,'f':5,'g':6,'h':7}
         from_ = int(values[played[0].lower()])+((8-int(played[1]))*8)
         to_ = int(values[played[2].lower()])+((8-int(played[3]))*8)
         return from_, to_
+
+    def translate_move(self,played):
+        values = {'a':0,'b':1,'c':2,'d':3,'e':4,'f':5,'g':6,'h':7}
+        return int(values[played[0].lower()]), ((8-int(played[1])))
     
 
 
@@ -152,7 +156,7 @@ class Echiquier:
         for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.game = False
-                if event.type == pygame.MOUSEBUTTONUP:
+                if event.type == pygame.MOUSEBUTTONDOWN:
                     self.click=True
                 else:
                     self.click=False
@@ -162,14 +166,14 @@ class Echiquier:
 
 #---------click test------
     def clicktest(self):
-        
-        
+
         if self.click == False and self.oldclick == True:
              self.oldclick = self.click
              return True
         else:
             self.oldclick = self.click
-            return False
+
+
         
 
 
@@ -200,26 +204,31 @@ def main():
     echiquier = Echiquier()
     echiquier.setup()
     echiquier.game = True #la partie est en jeu
-    memorymove = None
+    selected_case = None
     while echiquier.game == True:            
             echiquier.drawBGboard()
-            if memorymove != None:
-                echiquier.draw_hilight(memorymove)
+            
+            if selected_case != None:
+                echiquier.draw_hilight(selected_case)
             echiquier.drawPiecesPosition()
-            #echiquier.draw_piece('nP',7,6)
             echiquier.pygame_events()
-            echiquier.quitgame()
-
+            
+            
             if echiquier.clicktest():
-                if memorymove==None:
-                    memorymove = echiquier.mouse_on_case()
                 
-                elif  memorymove == echiquier.mouse_on_case():
-                    memorymove = None
+                if selected_case==None: #selection de la case 1 
+                    x,y=echiquier.translate_move(echiquier.mouse_on_case())
+                    if echiquier.board[x+y*8] != '':
+                        selected_case = echiquier.mouse_on_case()
+                    
+                    
+                
+                elif  selected_case == echiquier.mouse_on_case(): #selection d'une case deja selectionnée click n°2
+                    selected_case = None
 
-                else:
-                    echiquier.move_piece(echiquier.translate_move(memorymove + echiquier.mouse_on_case()))
-                    memorymove = None
+                else: #deplacement click n°2
+                    echiquier.move_piece(echiquier.translate_moves(selected_case + echiquier.mouse_on_case()))
+                    selected_case = None
                     
                 print("bip")
 
@@ -228,29 +237,8 @@ def main():
             
             
             
-            
-        
-
-            
-            #if echiquier.mouse_presses[0]:
-            #        print("Left Mouse key was clicked")
-
-            #print(echiquier.mouse_presses)
-            #print(echiquier.mouse_on_case())
-            pygame.time.delay(10)
+            echiquier.quitgame()
+            pygame.time.delay(20)
             pygame.display.update()
-
-
-
-
-            ''' window.blit(all_pieces_img,(0,0))
-            showboard()
-            played = turn(turns,True)
-            while not check_move(played):
-                played = turn(turns,False)
-            turns += 1
-            movement_coords = piece_move(played)
-            board[movement_coords[1]]=board[movement_coords[0]]
-            board[movement_coords[0]]='' '''
 
 main()
