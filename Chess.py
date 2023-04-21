@@ -193,10 +193,11 @@ class Echiquier:
 
 #----sousligne la case selectionée----
     def draw_hilight(self,postition):
-        values = {'a':1,'b':2,'c':3,'d':4,'e':5,'f':6,'g':7,'h':8}
-        y = int(postition[1])
-        x = int(values[postition[0].lower()])
-        pygame.draw.rect(self.window,(255,30,120), (self.taille_case*(x-1), self.taille_case*(8-y) , self.taille_case, self.taille_case))
+        if self.selected_case != None:
+            values = {'a':1,'b':2,'c':3,'d':4,'e':5,'f':6,'g':7,'h':8}
+            y = int(postition[1])
+            x = int(values[postition[0].lower()])
+            pygame.draw.rect(self.window,(255,30,120), (self.taille_case*(x-1), self.taille_case*(8-y) , self.taille_case, self.taille_case))
 
 
 #------boucle main------
@@ -204,40 +205,41 @@ def main():
     echiquier = Echiquier()
     echiquier.setup()
     echiquier.game = True #la partie est en jeu
-    selected_case = None
+    echiquier.selected_case = None
     while echiquier.game == True:            
             echiquier.drawBGboard()
-            
-            if selected_case != None:
-                echiquier.draw_hilight(selected_case)
+            echiquier.draw_hilight(echiquier.selected_case)
             echiquier.drawPiecesPosition()
             echiquier.pygame_events()
-            
+            echiquier.quitgame()
+
+
             
             if echiquier.clicktest():
-                
-                if selected_case==None: #selection de la case 1 
+                if echiquier.selected_case==None: #selection de la case 1 
                     x,y=echiquier.translate_move(echiquier.mouse_on_case())
                     if echiquier.board[x+y*8] != '':
-                        selected_case = echiquier.mouse_on_case()
-                    
+                        echiquier.selected_case = echiquier.mouse_on_case()
+                        case1color = echiquier.pieces[echiquier.board[x+y*8]].team
+                elif  echiquier.selected_case == echiquier.mouse_on_case(): #selection d'une case deja selectionnée click n°2
+                    echiquier.selected_case = None
+                else: #deplacement click n°2
+                    x,y=echiquier.translate_move(echiquier.mouse_on_case())
+                    if echiquier.board[x+y*8] == "":
+                        echiquier.move_piece(echiquier.translate_moves(echiquier.selected_case + echiquier.mouse_on_case()))
+                        echiquier.selected_case = None
+                    elif case1color != echiquier.pieces[echiquier.board[x+y*8]].team:
+                        echiquier.move_piece(echiquier.translate_moves(echiquier.selected_case + echiquier.mouse_on_case()))
+                        echiquier.selected_case = None
                     
                 
-                elif  selected_case == echiquier.mouse_on_case(): #selection d'une case deja selectionnée click n°2
-                    selected_case = None
-
-                else: #deplacement click n°2
-                    echiquier.move_piece(echiquier.translate_moves(selected_case + echiquier.mouse_on_case()))
-                    selected_case = None
-                    
-                print("bip")
 
             
 
             
             
             
-            echiquier.quitgame()
+            
             pygame.time.delay(20)
             pygame.display.update()
 
