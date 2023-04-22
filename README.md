@@ -1,4 +1,3 @@
 # ChessProject
-movepiece
-version 3.3.4
-fixed movement plus some illegal moves
+version 4.0.0
+separated the code
