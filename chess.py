@@ -60,12 +60,12 @@ class Echiquier:
         self.Border = 'bT','bC','bF','bD','bR','bF','bC','bT'
 
         #------application de l'ordre de pieces------
-    def setupPiecesOrder(self):
+    '''def setupPiecesOrder(self):
         for i in range(8):
             self.board[i] = self.Norder[i]
             self.board[i+8+8*6]=self.Border[i]
             self.board[i+8]='nP'
-            self.board[i+8+8*5]='bP'
+            self.board[i+8+8*5]='bP'''
         
     def WhoseTurn(self) -> Couleur:
         """
@@ -112,15 +112,24 @@ class Echiquier:
             print('\n')
 
     #------deplacement d'une piece sur le board------ input E3e4 outpout 52,36
-    def translate_moves(self,played):
+    def translate_moves(self,played,type):
         values = {'a':0,'b':1,'c':2,'d':3,'e':4,'f':5,'g':6,'h':7}
-        from_ = int(values[played[0].lower()])+((8-int(played[1]))*8)
-        to_ = int(values[played[2].lower()])+((8-int(played[3]))*8)
+        if type == 'number':
+            from_ = int(values[played[0].lower()])+((8-int(played[1]))*8)
+            to_ = int(values[played[2].lower()])+((8-int(played[3]))*8)
+        
+        if type == 'coord':
+            from_ = int(values[played[0].lower()]),((8-int(played[1])))
+            to_ = int(values[played[2].lower()]),((8-int(played[3])))
         return from_, to_
 
-    def translate_move(self,played):
+    def translate_move(self,played,type):
         values = {'a':0,'b':1,'c':2,'d':3,'e':4,'f':5,'g':6,'h':7}
-        return int(values[played[0].lower()]), ((8-int(played[1])))
+        if type == 'coord':
+            played = int(values[played[0].lower()]), ((8-int(played[1])))
+        if type == 'number':
+            played = int(values[played[0].lower()])+ ((8-int(played[1]))*8)
+        return played
     
 #------piecemove------
     def move_piece(self,from_to):
@@ -130,7 +139,7 @@ class Echiquier:
         self.board[from_] = ''
 
     def convertCoordCaseToXY(self,coordCase):
-        x,y=self.translate_move(coordCase)
+        x,y=self.translate_move(coordCase, 'coord')
         return x,y
         
     def getPieceOnCoord(self, coordCase):
@@ -139,6 +148,106 @@ class Echiquier:
             return self.pieces[self.board[x+y*8]]
         return None
     
+    def getPieceOnBiCoord(self, x,y):
+        if x <= 7 and y <= 7 and x >= 0 and y >= 0 and self.board[x+y*8] in self.pieces:
+            return self.pieces[self.board[x+y*8]]
+        return None
+    
 
     def TestValidMove(self, fromto):
-        return True
+        piece = self.getPieceOnCoord(fromto[0]+fromto[1]).type
+        from_ , to_ = self.translate_moves(fromto,'coord')
+        
+        print (f"{self.board[from_[0]+from_[1]*8]} from {from_} to {to_} {self.board[to_[0]+to_[1]*8]}")
+        if piece == 'p':
+            pawncolor = self.getPieceOnCoord(fromto[0]+fromto[1]).team
+
+            if pawncolor == Couleur.WHITE:
+                if from_[0] == to_[0] and from_[1] == to_[1]+1 and self.board[to_[0]+to_[1]*8] == '':
+                    return True
+
+                if from_[1] == 6 and from_[0] == to_[0] and to_[1] == 4 and self.board[5*8 + from_[0]] == '':
+                    return True
+                if self.getPieceOnCoord(fromto[2]+fromto[3]) != None:
+                    eatcolor = self.getPieceOnCoord(fromto[2]+fromto[3]).team
+                    if eatcolor != Couleur.WHITE and from_[1] == to_[1]+1 and (from_[0] == to_[0]+1 or from_[0] == to_[0]-1):
+                        return True
+                return False
+
+            elif pawncolor == Couleur.BLACK:
+                if from_[0] == to_[0] and from_[1] == to_[1]-1 and self.board[to_[0]+to_[1]*8] == '':
+                    return True
+                if from_[1] == 1 and from_[0] == to_[0] and to_[1] == 3 and self.board[2*8 + from_[0]] == '':
+                    return True
+                if self.getPieceOnCoord(fromto[2]+fromto[3]) != None:
+                    eatcolor = self.getPieceOnCoord(fromto[2]+fromto[3]).team
+                    if eatcolor != Couleur.BLACK and from_[1] == to_[1]-1 and (from_[0] == to_[0]+1 or from_[0] == to_[0]-1):
+                        return True
+            return False
+
+        if piece == 'r':
+            if abs(from_[0]-to_[0]) in [0,1]  and abs(from_[1]-to_[1]) in [0,1]:
+                return True
+            return False
+        
+        if piece == 'c':
+            if abs(from_[0]-to_[0]) in [2,1]  and abs(from_[1]-to_[1]) in [2,1] and abs(from_[1]-to_[1])-abs(from_[0]-to_[0]):
+                return True
+            return False
+
+        if piece == 't' or piece == 'd':
+            possiblemoves = []
+
+
+            for i in range(1,8):
+                if from_[1]+i >= 0 and self.board[from_[0]+(from_[1]-i)*8] == '':
+                    possiblemoves.append((from_[0],from_[1]-i))
+                else:
+                    if from_[0]+(from_[1]-i)*8 >= 0 and self.getPieceOnBiCoord(from_[0],(from_[1]-i)) != None and self.getPieceOnBiCoord(from_[0],(from_[1]-i)).team != self.getPieceOnBiCoord(from_[0],from_[1]).team:
+                                possiblemoves.append((from_[0],from_[1]-i))
+                    break
+            
+            for i in range(1,8):
+                if from_[1]+i <= 7 and self.board[from_[0]+(from_[1]+i)*8] == '':
+                    possiblemoves.append((from_[0],from_[1]+i))
+                else:
+                    if from_[0]+(from_[1]+i)*8 <= 64 and self.getPieceOnBiCoord(from_[0],(from_[1]+i)) != None and self.getPieceOnBiCoord(from_[0],(from_[1]+i)).team != self.getPieceOnBiCoord(from_[0],from_[1]).team:
+                                possiblemoves.append((from_[0],from_[1]+i))
+                    break
+
+            for i in range(1,8):
+                if from_[0]-i >= 0 and self.board[from_[0]-i+from_[1]*8] == '':
+                    possiblemoves.append((from_[0]-i,from_[1]))
+                else:
+                    if from_[0]-i+from_[1]*8 >= 0 and self.getPieceOnBiCoord(from_[0]-i,(from_[1])) != None and self.getPieceOnBiCoord(from_[0]-i,from_[1]).team != self.getPieceOnBiCoord(from_[0],from_[1]).team:
+                                possiblemoves.append((from_[0]-i,from_[1]))
+                    break
+            
+            for i in range(1,8):
+                if from_[0]+i <= 7 and self.board[from_[0]+i+from_[1]*8] == '':
+                    possiblemoves.append((from_[0]+i,from_[1]))
+                else:
+                    if from_[0]+i+from_[1]*8 <= 64 and self.getPieceOnBiCoord(from_[0]+i,(from_[1])) != None and self.getPieceOnBiCoord(from_[0]+i,from_[1]).team != self.getPieceOnBiCoord(from_[0],from_[1]).team:
+                                possiblemoves.append((from_[0]+i,from_[1]))
+                    break
+
+
+        
+            if (to_[0] , to_[1]) in possiblemoves:
+                return True
+
+        if piece == 'f' or piece == 'd':
+            return True
+
+
+
+        return False
+    
+
+
+    def setupPiecesOrder(self):
+        for i in range(8):
+            self.board[i] = self.Norder[i]
+            self.board[i+8+8*6]=self.Border[i]
+            self.board[i+8]='nP'
+            self.board[i+8+8*5]='bP'

@@ -27,36 +27,28 @@ def main():
                         piece = echiquier.getPieceOnCoord(coordCase1)
                         if piece != None and piece.team == echiquier.WhoseTurn():
                             g.updateDisplay(echiquier, coordCase1)
-                            highlighted_case = None
                             state = 'ONECLICK'
                         
                 case 'ONECLICK':
                     if g.clicktest():
-                        coordCase2 =  g.GetMouseCase()
-                        if echiquier.TestValidMove(coordCase1+coordCase2):
-                            echiquier.move_piece(echiquier.translate_moves(coordCase1 + coordCase2))
+                        coordCase2 =  g.GetMouseCase()                        
+                        if coordCase1 == coordCase2:
+                            # select same case
+                            coordCase1 = None
+                            state = 'INIT'
                             g.updateDisplay(echiquier)
+                        elif echiquier.getPieceOnCoord(coordCase2) != None and echiquier.getPieceOnCoord(coordCase2).team == echiquier.WhoseTurn():
+                            #select another piece
+                            coordCase1 = coordCase2
+                            coordCase2 = None
+                            g.updateDisplay(echiquier, coordCase1)
+                        elif echiquier.TestValidMove(coordCase1+coordCase2):
+                            #selct movement
+                            echiquier.move_piece(echiquier.translate_moves(coordCase1 + coordCase2,'number'))
+                            g.updateDisplay(echiquier)
+                            echiquier.switchTurn()
                             state = 'INIT'
 
-            """ 
-            if echiquier.clicktest():
-                if echiquier.selected_case==None: #selection de la case 1 
-                    x,y=echiquier.translate_move(echiquier.mouse_on_case())
-                    if echiquier.board[x+y*8] != '':
-                        echiquier.selected_case = echiquier.mouse_on_case()
-                        case1color = echiquier.pieces[echiquier.board[x+y*8]].team
-                elif  echiquier.selected_case == echiquier.mouse_on_case(): #selection d'une case deja selectionnée click n°2
-                    echiquier.selected_case = None
-                else: #deplacement click n°2
-                    x,y=echiquier.translate_move(echiquier.mouse_on_case())
-                    if echiquier.board[x+y*8] == "":
-                        echiquier.move_piece(echiquier.translate_moves(echiquier.selected_case + echiquier.mouse_on_case()))
-                        echiquier.selected_case = None
-                    elif case1color != echiquier.pieces[echiquier.board[x+y*8]].team:
-                        echiquier.move_piece(echiquier.translate_moves(echiquier.selected_case + echiquier.mouse_on_case()))
-                        echiquier.selected_case = None
-                    
-             """
             g.waitALittle()
 
 
