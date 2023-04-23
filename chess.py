@@ -200,13 +200,12 @@ class Echiquier:
 
 
             for i in range(1,8):
-                if from_[1]+i >= 0 and self.board[from_[0]+(from_[1]-i)*8] == '':
+                if from_[1]-i >= 0 and self.board[from_[0]+(from_[1]-i)*8] == '':
                     possiblemoves.append((from_[0],from_[1]-i))
                 else:
                     if from_[0]+(from_[1]-i)*8 >= 0 and self.getPieceOnBiCoord(from_[0],(from_[1]-i)) != None and self.getPieceOnBiCoord(from_[0],(from_[1]-i)).team != self.getPieceOnBiCoord(from_[0],from_[1]).team:
                                 possiblemoves.append((from_[0],from_[1]-i))
                     break
-            
             for i in range(1,8):
                 if from_[1]+i <= 7 and self.board[from_[0]+(from_[1]+i)*8] == '':
                     possiblemoves.append((from_[0],from_[1]+i))
@@ -214,7 +213,6 @@ class Echiquier:
                     if from_[0]+(from_[1]+i)*8 <= 64 and self.getPieceOnBiCoord(from_[0],(from_[1]+i)) != None and self.getPieceOnBiCoord(from_[0],(from_[1]+i)).team != self.getPieceOnBiCoord(from_[0],from_[1]).team:
                                 possiblemoves.append((from_[0],from_[1]+i))
                     break
-
             for i in range(1,8):
                 if from_[0]-i >= 0 and self.board[from_[0]-i+from_[1]*8] == '':
                     possiblemoves.append((from_[0]-i,from_[1]))
@@ -222,7 +220,6 @@ class Echiquier:
                     if from_[0]-i+from_[1]*8 >= 0 and self.getPieceOnBiCoord(from_[0]-i,(from_[1])) != None and self.getPieceOnBiCoord(from_[0]-i,from_[1]).team != self.getPieceOnBiCoord(from_[0],from_[1]).team:
                                 possiblemoves.append((from_[0]-i,from_[1]))
                     break
-            
             for i in range(1,8):
                 if from_[0]+i <= 7 and self.board[from_[0]+i+from_[1]*8] == '':
                     possiblemoves.append((from_[0]+i,from_[1]))
@@ -231,13 +228,47 @@ class Echiquier:
                                 possiblemoves.append((from_[0]+i,from_[1]))
                     break
 
+            if (to_[0] , to_[1]) in possiblemoves:
+                return True
+
+        if piece == 'f' or piece == 'd':
+            possiblemoves = []
+
+
+            for i in range(1,8):
+                if from_[1]-i >= 0 and from_[0]-i and self.board[from_[0]-i+(from_[1]-i)*8] == '':
+                    possiblemoves.append((from_[0]-i,from_[1]-i))
+                else:
+                    if from_[0]-i+(from_[1]-i)*8 >= 0 and self.getPieceOnBiCoord(from_[0]-i,(from_[1]-i)) != None and self.getPieceOnBiCoord(from_[0]-i,(from_[1]-i)).team != self.getPieceOnBiCoord(from_[0],from_[1]).team:
+                                possiblemoves.append((from_[0]-i,from_[1]-i))
+                    break
+            for i in range(1,8):
+                if from_[1]+i <= 7 and from_[0]+i >= 7 and self.board[from_[0]+i+(from_[1]+i)*8] == '':
+                    possiblemoves.append((from_[0]+i,from_[1]+i))
+                else:
+                    if from_[0]+i+(from_[1]+i)*8 <= 64 and self.getPieceOnBiCoord(from_[0]+i,(from_[1]+i)) != None and self.getPieceOnBiCoord(from_[0]+i,(from_[1]+i)).team != self.getPieceOnBiCoord(from_[0],from_[1]).team:
+                                possiblemoves.append((from_[0]+i,from_[1]+i))
+                    break
+            for i in range(1,8):
+                if from_[0]-i >= 0 and from_[1]+i <=7 and self.board[from_[0]-i+(from_[1]+i)*8] == '':
+                    possiblemoves.append((from_[0]-i,from_[1]+i))
+                else:
+                    if from_[0]-i+(from_[1]+i)*8 >= 0 and self.getPieceOnBiCoord(from_[0]-i,(from_[1]+i)) != None and self.getPieceOnBiCoord(from_[0]-i,from_[1]+i).team != self.getPieceOnBiCoord(from_[0],from_[1]).team:
+                                possiblemoves.append((from_[0]-i,from_[1]+i))
+                    break
+            for i in range(1,8):
+                if from_[0]+i <= 7 and from_[1]-i >= 0 and self.board[from_[0]+i+(from_[1]-i)*8] == '':
+                    possiblemoves.append((from_[0]+i,from_[1]-i))
+                else:
+                    if from_[0]+i+(from_[1]-i)*8 <= 64 and self.getPieceOnBiCoord(from_[0]+i,(from_[1]-i)) != None and self.getPieceOnBiCoord(from_[0]+i,from_[1]-i).team != self.getPieceOnBiCoord(from_[0],from_[1]).team:
+                                possiblemoves.append((from_[0]+i,from_[1]-i))
+                    break
+
 
         
             if (to_[0] , to_[1]) in possiblemoves:
                 return True
 
-        if piece == 'f' or piece == 'd':
-            return True
 
 
 

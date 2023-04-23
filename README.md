@@ -1,8 +1,8 @@
 # ChessProject
-version 4.1.0
+version 4.1.1
 pawn no en passant
 king no checks and no castles
 knight
 Tour
-Dame 1/2
-fou 0
+Dame 
+fou 

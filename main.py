@@ -46,7 +46,7 @@ def main():
                             #selct movement
                             echiquier.move_piece(echiquier.translate_moves(coordCase1 + coordCase2,'number'))
                             g.updateDisplay(echiquier)
-                            echiquier.switchTurn()
+                            ########echiquier.switchTurn()
                             state = 'INIT'
 
             g.waitALittle()
